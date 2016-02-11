@@ -15,37 +15,33 @@ import javafx.stage.Stage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 public class EntryPoint extends Application {
 
     private Stage primaryStage;
     private BorderPane rootLayout;
-
-    public ObservableList<ProcessEntity> getProcessList() {
-        return processList;
-    }
-
     private ObservableList<ProcessEntity> processList = FXCollections.observableArrayList();
 
     public EntryPoint() throws IOException {
         ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "chcp 65001 && tasklist");
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();
-        BufferedReader r = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        String line;
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        processList.addAll(bufferedReader.lines()
+                //skipping table header
+                .skip(4)
+                .map(ProcessEntity::parseProcess)
+                .sorted(((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())))
+                .collect(Collectors.toList()));
+    }
 
-        //Four invocations of the r.readLine() just to skip table header
-        r.readLine();
-        r.readLine();
-        r.readLine();
-        r.readLine();
-        while (true) {
-            line = r.readLine();
-            if (line == null) {
-                break;
-            }
-            processList.add(ProcessEntity.parseProcess(line));
-        }
+    public static void main(String[] args) throws IOException {
+        launch(args);
+    }
+
+    public ObservableList<ProcessEntity> getProcessList() {
+        return processList;
     }
 
     @Override
@@ -84,10 +80,5 @@ public class EntryPoint extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-
-    public static void main(String[] args) throws IOException {
-        launch(args);
     }
 }
