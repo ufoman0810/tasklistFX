@@ -157,6 +157,5 @@ public class TasklistController {
                         })))
                         .sorted((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())).collect(Collectors.toList())
         );
-        application.getProcessList().sort(((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())));
     }
 }
