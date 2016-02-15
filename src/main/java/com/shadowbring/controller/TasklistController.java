@@ -6,6 +6,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 public class TasklistController {
     @FXML
     private TableView<ProcessEntity> processTable;
@@ -61,7 +65,7 @@ public class TasklistController {
     /**
      * Is called by the main application to give a reference back to itself.
      *
-     * @param application
+     * @param application - instance of the EntryPoint
      */
     public void setApplication(EntryPoint application) {
         this.application = application;
@@ -138,27 +142,21 @@ public class TasklistController {
 //                    .showWarning();
 //        }
 //    }
-
     @FXML
     private void handleClearDuplicates() {
-        System.out.println(application.getProcessList().stream().map(ProcessEntity::getName).distinct()
-                .flatMap(name -> application.getProcessList().filtered(processEntity -> processEntity.getName().equals(name)).stream()/*.map(ProcessEntity::getUsedMemory)*/)
-                .reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
-                    processEntity1.setName(processEntity2.getName());
-                    processEntity1.setPid(processEntity2.getPid());
-                    processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
-                    return processEntity1;
-                })).toString());
-                /*.forEach(System.out::println)*/;
-//        application.getProcessList().stream().map(ProcessEntity::getName).distinct().flatMap(sameProcesses -> application.getProcessList().stream().filter(processEntity -> processEntity.getName().equals(sameProcesses)))/*.reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
-//            processEntity1.setName(processEntity1.getName());
-//            processEntity1.setPid(processEntity1.getPid());
-//            processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
-//            return processEntity1;})))*/.reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
-//            processEntity1.setName(processEntity1.getName());
-//            processEntity1.setPid(processEntity1.getPid());
-//            processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
-//            return processEntity1;
-//        }));
+        Map<String, List<ProcessEntity>> processesByName = application.getProcessList().stream()
+                .collect(Collectors.groupingBy(ProcessEntity::getName));
+        application.getProcessList().clear();
+        application.getProcessList().addAll(
+                processesByName.values().stream().map(sameProcesses -> sameProcesses.stream().reduce(new ProcessEntity(),
+                        ((processEntity, processEntity2) -> {
+                            processEntity.setName(processEntity2.getName());
+                            processEntity.setPid(processEntity2.getPid());
+                            processEntity.setUsedMemory(processEntity.getUsedMemory() + processEntity2.getUsedMemory());
+                            return processEntity;
+                        })))
+                        .sorted((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())).collect(Collectors.toList())
+        );
+        application.getProcessList().sort(((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())));
     }
 }
