@@ -24,6 +24,7 @@ public class EntryPoint extends Application {
     private ObservableList<ProcessEntity> processList = FXCollections.observableArrayList();
 
     public EntryPoint() throws IOException {
+        //chcp 65001 switches cmd to utf8-compatible mode
         ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c", "chcp 65001 && tasklist");
         processBuilder.redirectErrorStream(true);
         Process process = processBuilder.start();

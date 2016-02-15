@@ -138,4 +138,27 @@ public class TasklistController {
 //                    .showWarning();
 //        }
 //    }
+
+    @FXML
+    private void handleClearDuplicates() {
+        System.out.println(application.getProcessList().stream().map(ProcessEntity::getName).distinct()
+                .flatMap(name -> application.getProcessList().filtered(processEntity -> processEntity.getName().equals(name)).stream()/*.map(ProcessEntity::getUsedMemory)*/)
+                .reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
+                    processEntity1.setName(processEntity2.getName());
+                    processEntity1.setPid(processEntity2.getPid());
+                    processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
+                    return processEntity1;
+                })).toString());
+                /*.forEach(System.out::println)*/;
+//        application.getProcessList().stream().map(ProcessEntity::getName).distinct().flatMap(sameProcesses -> application.getProcessList().stream().filter(processEntity -> processEntity.getName().equals(sameProcesses)))/*.reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
+//            processEntity1.setName(processEntity1.getName());
+//            processEntity1.setPid(processEntity1.getPid());
+//            processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
+//            return processEntity1;})))*/.reduce(new ProcessEntity(), ((processEntity1, processEntity2) -> {
+//            processEntity1.setName(processEntity1.getName());
+//            processEntity1.setPid(processEntity1.getPid());
+//            processEntity1.setUsedMemory(processEntity1.getUsedMemory() + processEntity2.getUsedMemory());
+//            return processEntity1;
+//        }));
+    }
 }

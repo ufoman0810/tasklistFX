@@ -67,7 +67,7 @@
                         <!--<children>-->
                         <Button layoutX="14.0" layoutY="320.0" mnemonicParsing="false"
                                 text="Clear duplicates" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0"
-                                AnchorPane.leftAnchor="10.0"/>
+                                AnchorPane.leftAnchor="10.0" onAction="#handleClearDuplicates"/>
                         <!--<Button layoutX="99.0" layoutY="259.0" mnemonicParsing="false"-->
                         <!--text="Edit..."/>-->
                         <!--<Button layoutX="188.0" layoutY="258.0" mnemonicParsing="false"-->

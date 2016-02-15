@@ -8,6 +8,12 @@ public class ProcessEntity {
     private IntegerProperty pid;
     private LongProperty usedMemory;
 
+    public ProcessEntity(String name, int pid, long usedMemory) {
+        this.name.set(name);
+        this.pid.set(pid);
+        this.usedMemory.set(usedMemory);
+    }
+
     public ProcessEntity() {
         this.name = new SimpleStringProperty();
         this.pid = new SimpleIntegerProperty();
