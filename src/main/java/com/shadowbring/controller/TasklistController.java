@@ -1,24 +1,20 @@
 package com.shadowbring.controller;
 
-import com.shadowbring.EntryPoint;
-import com.shadowbring.model.ProcessEntity;
+import com.shadowbring.TasklistApp;
+import com.shadowbring.model.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public class TasklistController {
     @FXML
-    private TableView<ProcessEntity> processTable;
+    private TableView<Task> taskTable;
     @FXML
-    private TableColumn<ProcessEntity, String> nameColumn;
+    private TableColumn<Task, String> nameColumn;
     @FXML
-    private TableColumn<ProcessEntity, String> pidColumn;
+    private TableColumn<Task, String> pidColumn;
     @FXML
-    private TableColumn<ProcessEntity, String> usedMemoryColumn;
+    private TableColumn<Task, String> usedMemoryColumn;
 
 //    @FXML
 //    private Label firstNameLabel;
@@ -33,33 +29,16 @@ public class TasklistController {
 //    @FXML
 //    private Label birthdayLabel;
 
-    // Reference to the main application.
-    private EntryPoint application;
+    private TasklistApp application;
 
-    /**
-     * The constructor.
-     * The constructor is called before the initialize() method.
-     */
     public TasklistController() {
     }
 
-    /**
-     * Initializes the controller class. This method is automatically called
-     * after the fxml file has been loaded.
-     */
     @FXML
     private void initialize() {
-//         Initialize the person table with the two columns.
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());
         pidColumn.setCellValueFactory(cellData -> cellData.getValue().pidProperty().asString());
-        usedMemoryColumn.setCellValueFactory(cellData -> cellData.getValue().usedMemoryProperty().asString());
-
-//         Clear person details.
-//        showPersonDetails(null);
-
-//         Listen for selection changes and show the person details when changed.
-//        processTable.getSelectionModel().selectedItemProperty().addListener(
-//                (observable, oldValue, newValue) -> showPersonDetails(newValue));
+        usedMemoryColumn.setCellValueFactory(cellData -> cellData.getValue().memoryProperty().asString());
     }
 
     /**
@@ -67,9 +46,9 @@ public class TasklistController {
      *
      * @param application - instance of the EntryPoint
      */
-    public void setApplication(EntryPoint application) {
+    public void setApplication(TasklistApp application) {
         this.application = application;
-        processTable.setItems(application.getProcessList());
+        taskTable.setItems(application.getTaskList());
     }
 
 //    public void showPersonDetails(Person person) {
@@ -92,70 +71,8 @@ public class TasklistController {
 //        }
 //    }
 
-//    @FXML
-//    private void handleDeletePerson() {
-//        int selectedIndex = processTable.getSelectionModel().getSelectedIndex();
-//        if (selectedIndex  > -1) {
-//            processTable.getItems().remove(selectedIndex);
-//        } else {
-//            // Nothing selected.
-//            Dialogs.create()
-//                    .title("No Selection")
-//                    .masthead("No Person Selected")
-//                    .message("Please select a person in the table.")
-//                    .showWarning();
-//        }
-//    }
-
-    /**
-     * Called when the user clicks the new button. Opens a dialog to edit
-     * details for a new person.
-     */
-//    @FXML
-//    private void handleNewPerson() {
-//        Person tempPerson = new Person();
-//        boolean okClicked = application.showPersonEditDialog(tempPerson);
-//        if (okClicked) {
-//            application.getPersonData().add(tempPerson);
-//        }
-//    }
-
-    /**
-     * Called when the user clicks the edit button. Opens a dialog to edit
-     * details for the selected person.
-     */
-//    @FXML
-//    private void handleEditPerson() {
-//        Person selectedPerson = processTable.getSelectionModel().getSelectedItem();
-//        if (selectedPerson != null) {
-//            boolean okClicked = application.showPersonEditDialog(selectedPerson);
-//            if (okClicked) {
-//                showPersonDetails(selectedPerson);
-//            }
-//
-//        } else {
-//            // Nothing selected.
-//            Dialogs.create()
-//                    .title("No Selection")
-//                    .masthead("No Person Selected")
-//                    .message("Please select a person in the table.")
-//                    .showWarning();
-//        }
-//    }
     @FXML
     private void handleClearDuplicates() {
-        Map<String, List<ProcessEntity>> processesByName = application.getProcessList().stream()
-                .collect(Collectors.groupingBy(ProcessEntity::getName));
-        application.getProcessList().clear();
-        application.getProcessList().addAll(
-                processesByName.values().stream().map(sameProcesses -> sameProcesses.stream().reduce(new ProcessEntity(),
-                        ((processEntity, processEntity2) -> {
-                            processEntity.setName(processEntity2.getName());
-                            processEntity.setPid(processEntity2.getPid());
-                            processEntity.setUsedMemory(processEntity.getUsedMemory() + processEntity2.getUsedMemory());
-                            return processEntity;
-                        })))
-                        .sorted((o1, o2) -> (int) (o1.getUsedMemory() - o2.getUsedMemory())).collect(Collectors.toList())
-        );
+        application.clearDuplicates();
     }
 }
