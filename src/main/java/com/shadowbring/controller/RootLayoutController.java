@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+import java.io.IOException;
 
 public class RootLayoutController {
 
@@ -14,33 +15,43 @@ public class RootLayoutController {
         this.application = application;
     }
 
-    //    @FXML
-//    private void handleOpen() {
-//        FileChooser fileChooser = new FileChooser();
-//
-//        // Set extension filter
-//        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(
-//                "XML files (*.xml)", "*.xml");
-//        fileChooser.getExtensionFilters().add(extFilter);
-//
-//        // Show save file dialog
-//        File file = fileChooser.showOpenDialog(application.getPrimaryStage());
-//
-//        if (file != null) {
-//            application.loadPersonDataFromFile(file);
-//        }
-//    }
+    @FXML
+    private void handleReimport() {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
+        fileChooser.getExtensionFilters().add(extFilter);
+        File xmlFile = fileChooser.showOpenDialog(application.getPrimaryStage());
+
+        if (xmlFile != null) {
+            application.reimportTasklistFromXml(xmlFile);
+        }
+    }
+
     @FXML
     private void handleExport() {
         FileChooser fileChooser = new FileChooser();
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("XML files (*.xml)", "*.xml");
         fileChooser.getExtensionFilters().add(extensionFilter);
-        File file = fileChooser.showSaveDialog(application.getPrimaryStage());
+        File xmlFile = fileChooser.showSaveDialog(application.getPrimaryStage());
 
-        if (file != null && !file.getPath().endsWith(".xml")) {
-            file = new File(file.getPath() + ".xml");
+        if (xmlFile != null && !xmlFile.getPath().endsWith(".xml")) {
+            xmlFile = new File(xmlFile.getPath() + ".xml");
         }
-        application.exportTasklistToXml(file);
+        application.exportTasklistToXml(xmlFile);
+    }
+
+    @FXML
+    private void handleXlsExport() throws IOException {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter =
+                new FileChooser.ExtensionFilter("Microsoft Excel files (*.xls, *.xlsx)", "*.xls", "*.xlsx");
+        fileChooser.getExtensionFilters().add(extensionFilter);
+        File xlsFile = fileChooser.showSaveDialog(application.getPrimaryStage());
+
+        if (xlsFile != null && !xlsFile.getPath().endsWith(".xls")) {
+            xlsFile = new File(xlsFile.getPath() + ".xls");
+        }
+        application.exportTasklistToXls(xlsFile);
     }
 
     @FXML
@@ -48,8 +59,8 @@ public class RootLayoutController {
         System.exit(0);
     }
 
-//    @FXML
-//    private void handleShowBirthdayStatistics() {
-//        application.showBirthdayStatistics();
-//    }
+    @FXML
+    private void handleShowMemoryUsageStatistics() {
+        application.showMemoryUsageStatistics();
+    }
 }

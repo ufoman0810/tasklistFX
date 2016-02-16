@@ -8,15 +8,21 @@
             <menus>
                 <Menu mnemonicParsing="false" text="File">
                     <items>
-                        <MenuItem mnemonicParsing="false" text="Re-import...">
+                        <MenuItem mnemonicParsing="false" text="Re-import..." onAction="#handleReimport">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP"
                                                     shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
-                        <MenuItem mnemonicParsing="false" text="Export..." onAction="#handleExport">
+                        <MenuItem mnemonicParsing="false" text="Export to XML..." onAction="#handleExport">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN"
+                                                    shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" text="Export to XLS..." onAction="#handleXlsExport">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="E" control="DOWN" meta="UP" shift="DOWN"
                                                     shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
@@ -29,7 +35,8 @@
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Statistics">
-                    <MenuItem mnemonicParsing="false" text="Show Statistics"/>
+                    <MenuItem mnemonicParsing="false" text="Show Statistics"
+                              onAction="#handleShowMemoryUsageStatistics"/>
                 </Menu>
             </menus>
         </MenuBar>

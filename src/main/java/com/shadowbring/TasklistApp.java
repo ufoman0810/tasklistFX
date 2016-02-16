@@ -1,5 +1,6 @@
 package com.shadowbring;
 
+import com.shadowbring.controller.MemoryUsageStatisticsController;
 import com.shadowbring.controller.RootLayoutController;
 import com.shadowbring.controller.TasklistController;
 import com.shadowbring.model.Task;
@@ -11,14 +12,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.xml.bind.Unmarshaller;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,6 +32,7 @@ import java.util.stream.Collectors;
 
 public class TasklistApp extends Application {
 
+    private static final Logger LOGGER = Logger.getLogger(TasklistApp.class.getClass().getName());
     private Stage primaryStage;
     private BorderPane rootLayout;
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
@@ -105,10 +111,8 @@ public class TasklistApp extends Application {
             wrapper.setTasks(taskList);
 
             marshaller.marshal(wrapper, xmlFile);
-
         } catch (Exception e) {
-            Logger.getLogger(this.getClass().getName())
-                    .log(Level.SEVERE, "Export to file: " + xmlFile.getPath() + " was failed!");
+            LOGGER.log(Level.SEVERE, "Export to file: " + xmlFile.getPath() + " was failed!");
         }
     }
 
@@ -129,6 +133,57 @@ public class TasklistApp extends Application {
     }
 
     public void reimportTasklistFromXml(File xmlFile) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(TaskListWrapper.class);
+            Unmarshaller um = context.createUnmarshaller();
+            TaskListWrapper wrapper = (TaskListWrapper) um.unmarshal(xmlFile);
 
+            importedTaskList.clear();
+            importedTaskList.addAll(wrapper.getTasks());
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Import from file: " + xmlFile.getPath() + " was failed!");
+        }
+    }
+
+    public void exportTasklistToXls(File xlsFile) throws IOException {
+        Workbook tasklist = new HSSFWorkbook();
+        Sheet tasklistSheet = tasklist.createSheet("TaskList");
+        Row headerRow = tasklistSheet.createRow(0);
+        Cell nameCell = headerRow.createCell(0);
+        Cell pidCell = headerRow.createCell(1);
+        Cell usedMemoryCell = headerRow.createCell(2);
+        nameCell.setCellValue("Name");
+        pidCell.setCellValue("PID");
+        usedMemoryCell.setCellValue("Used Memory");
+        for (Task task : taskList) {
+            Row dataRow = tasklistSheet.createRow(taskList.indexOf(task) + 1);
+            dataRow.createCell(0).setCellValue(task.getName());
+            dataRow.createCell(1).setCellValue(task.getPid());
+            dataRow.createCell(2).setCellValue(task.getMemory());
+        }
+        FileOutputStream fileOutputStream = new FileOutputStream(xlsFile);
+        tasklist.write(fileOutputStream);
+        fileOutputStream.close();
+    }
+
+    public void showMemoryUsageStatistics() {
+        try {
+            FXMLLoader loader = new FXMLLoader();
+            loader.setLocation(TasklistApp.class.getResource("/view/MemoryUsageStatisticsLayout.fxml"));
+            AnchorPane page = loader.load();
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Memory Usage Statistics");
+            dialogStage.initModality(Modality.WINDOW_MODAL);
+            dialogStage.initOwner(primaryStage);
+            Scene scene = new Scene(page);
+            dialogStage.setScene(scene);
+            MemoryUsageStatisticsController controller = loader.getController();
+            controller.setTaskList(taskList);
+
+            dialogStage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
