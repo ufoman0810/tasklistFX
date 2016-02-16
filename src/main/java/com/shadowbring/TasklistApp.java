@@ -178,6 +178,7 @@ public class TasklistApp extends Application {
             Scene scene = new Scene(page);
             dialogStage.setScene(scene);
             MemoryUsageStatisticsController controller = loader.getController();
+            controller.setApplication(this);
             controller.setTaskList(taskList);
 
             dialogStage.show();

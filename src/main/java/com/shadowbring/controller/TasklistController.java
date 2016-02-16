@@ -31,9 +31,6 @@ public class TasklistController {
 
     private TasklistApp application;
 
-    public TasklistController() {
-    }
-
     @FXML
     private void initialize() {
         nameColumn.setCellValueFactory(cellData -> cellData.getValue().nameProperty());

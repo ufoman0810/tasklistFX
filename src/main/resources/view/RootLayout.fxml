@@ -5,9 +5,7 @@
             fx:controller="com.shadowbring.controller.RootLayoutController">
     <top>
         <MenuBar BorderPane.alignment="CENTER">
-            <menus>
                 <Menu mnemonicParsing="false" text="File">
-                    <items>
                         <MenuItem mnemonicParsing="false" text="Re-import..." onAction="#handleReimport">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP"
@@ -32,13 +30,11 @@
                                                     shortcut="UP"/>
                             </accelerator>
                         </MenuItem>
-                    </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Statistics">
-                    <MenuItem mnemonicParsing="false" text="Show Statistics"
+                    <MenuItem mnemonicParsing="false" text="Show Memory Usage"
                               onAction="#handleShowMemoryUsageStatistics"/>
                 </Menu>
-            </menus>
         </MenuBar>
     </top>
 </BorderPane>
