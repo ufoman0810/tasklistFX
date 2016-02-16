@@ -79,4 +79,11 @@ public class Task {
     public String toString() {
         return "Image Name: " + name.get() + " PID: " + pid.get() + " Used Memory: " + memory.get();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof Task &&
+                this.getName().equals(((Task) obj).getName()) &&
+                this.getMemory() == ((Task) obj).getMemory();
+    }
 }

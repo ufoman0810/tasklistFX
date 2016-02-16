@@ -36,7 +36,6 @@ public class TasklistApp extends Application {
     private Stage primaryStage;
     private BorderPane rootLayout;
     private ObservableList<Task> taskList = FXCollections.observableArrayList();
-    private ObservableList<Task> importedTaskList = FXCollections.observableArrayList();
 
     public TasklistApp() throws IOException {
         //chcp 65001 switches cmd.exe to utf8-compatible mode
@@ -135,11 +134,11 @@ public class TasklistApp extends Application {
     public void reimportTasklistFromXml(File xmlFile) {
         try {
             JAXBContext context = JAXBContext.newInstance(TaskListWrapper.class);
-            Unmarshaller um = context.createUnmarshaller();
-            TaskListWrapper wrapper = (TaskListWrapper) um.unmarshal(xmlFile);
+            Unmarshaller unmarshaller = context.createUnmarshaller();
+            TaskListWrapper wrapper = (TaskListWrapper) unmarshaller.unmarshal(xmlFile);
 
-            importedTaskList.clear();
-            importedTaskList.addAll(wrapper.getTasks());
+            taskList.clear();
+            taskList.addAll(wrapper.getTasks());
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Import from file: " + xmlFile.getPath() + " was failed!");
         }
